@@ -1,79 +1,116 @@
-document.addEventListener('DOMContentLoaded', function () {
-    const prSlider = document.getElementById('pr');
-    const toneDurSlider = document.getElementById('toneDur');
-    const faSlider = document.getElementById('fa');
-    const dfSlider = document.getElementById('df');
-    const volumeSlider = document.getElementById('volume');
+let audioContext;
+let bufferSource;
+let isPlaying = false;
+let gainNode;
+
+function initAudioContext() {
+  if (!audioContext) {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    gainNode = audioContext.createGain();
+  }
+}
+
+function updateSliderValue(sliderId, valueId) {
+  const slider = document.getElementById(sliderId);
+  const valueDisplay = document.getElementById(valueId);
+  slider.addEventListener('input', function () {
+    valueDisplay.textContent = this.value;
+    if (isPlaying) {
+      updateSequence(); // Update the sequence if it's playing
+    }
+  });
+}
+
+function createToneBuffer(fA, fB, toneDur, pr) {
+  const sampleRate = audioContext.sampleRate;
+  const toneLength = sampleRate * toneDur;
+  const interval = sampleRate / pr;
+  const silenceLength = interval - toneLength;
+  const totalLength = interval * 4; // Length of one full sequence (ABA_)
+  const bufferSize = totalLength * Math.ceil(10 / (4 / pr)); // 10 seconds of buffer
+
+  const buffer = audioContext.createBuffer(1, bufferSize, sampleRate);
+  const data = buffer.getChannelData(0);
+
+  // Function to fill buffer with a tone
+  function fillTone(frequency, start, duration) {
+    for (let i = 0; i < duration; i++) {
+      data[start + i] += 0.5 * Math.sin(2 * Math.PI * frequency * (i / sampleRate));
+    }
+  }
+
+  // Filling the buffer with the ABA_ sequence
+  for (let time = 0; time < bufferSize; time += totalLength) {
+    fillTone(fA, time, toneLength); // A
+    fillTone(fB, time + interval, toneLength); // B
+    fillTone(fA, time + 2 * interval, toneLength); // A
+    // Silence is automatically inserted after the third tone
+  }
+
+  return buffer;
+}
+
+function playSequence() {
+    if (bufferSource) {
+      bufferSource.stop();
+      bufferSource.disconnect();
+    }
+  
+    bufferSource = audioContext.createBufferSource();
+    bufferSource.buffer = createToneBuffer(
+      parseInt(document.getElementById('fa').value),
+      parseInt(document.getElementById('fa').value) * Math.pow(2, -parseInt(document.getElementById('df').value) / 12),
+      parseFloat(document.getElementById('toneDur').value),
+      parseInt(document.getElementById('pr').value)
+    );
+    bufferSource.loop = true;
+  
+    gainNode.gain.value = parseFloat(document.getElementById('volume').value);
+    bufferSource.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+  
+    bufferSource.start();
+  }
+
+function updateSequence() {
+    if (isPlaying) {
+      playSequence(); // Restart the sequence with new parameters
+    }
+  }
+  
+  function togglePlayPause() {
+    initAudioContext(); // Initialize Audio Context on user interaction
+  
     const playPauseButton = document.getElementById('playPause');
-    let isPlaying = false;
-    let audioContext;
-    let oscillatorA, oscillatorB;
-
-    // Initialize Web Audio API
-    function initAudio() {
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    if (!isPlaying) {
+      isPlaying = true;
+      playPauseButton.textContent = 'Pause';
+      playSequence();
+    } else {
+      isPlaying = false;
+      playPauseButton.textContent = 'Play';
+      if (bufferSource) {
+        bufferSource.stop();
+      }
     }
-
-    // Function to play tones
-    function playTones() {
-        // Calculate the upper limit for tone duration
-        const pr = parseFloat(prSlider.value);
-        const maxDur = 1 / pr;
-        let toneDur = parseFloat(toneDurSlider.value);
-        toneDur = toneDur > maxDur ? maxDur : toneDur;
-
-        // Calculate frequencies based on fA and DF
-        const fA = parseFloat(faSlider.value);
-        const df = parseFloat(dfSlider.value);
-        const fB = fA * Math.pow(2, df / 12);
-
-        // Create oscillators for A and B tones
-        oscillatorA = audioContext.createOscillator();
-        oscillatorB = audioContext.createOscillator();
-        oscillatorA.frequency.setValueAtTime(fA, audioContext.currentTime);
-        oscillatorB.frequency.setValueAtTime(fB, audioContext.currentTime);
-
-        // Connect to volume control
-        const gainNode = audioContext.createGain();
-        gainNode.gain.setValueAtTime(parseFloat(volumeSlider.value), audioContext.currentTime);
-        oscillatorA.connect(gainNode).connect(audioContext.destination);
-        oscillatorB.connect(gainNode).connect(audioContext.destination);
-
-        // Start the oscillators
-        oscillatorA.start();
-        oscillatorB.start();
-
-        // Stop the oscillators after duration
-        oscillatorA.stop(audioContext.currentTime + toneDur);
-        oscillatorB.stop(audioContext.currentTime + toneDur);
-
-        // Set up next tones
-        setTimeout(playTones, 1000 / pr);
-    }
-
-    // Play/Pause toggle
-    playPauseButton.addEventListener('click', function () {
-        if (!audioContext) {
-            initAudio();
-        }
-        if (!isPlaying) {
-            playTones();
-            playPauseButton.textContent = 'Pause';
-        } else {
-            // Pause the audio
-            audioContext.suspend();
-            playPauseButton.textContent = 'Play';
-        }
-        isPlaying = !isPlaying;
+  }
+  
+  document.addEventListener('DOMContentLoaded', function () {
+    // Set up sliders and event listeners
+    updateSliderValue('pr', 'pr-value');
+    updateSliderValue('toneDur', 'toneDur-value');
+    updateSliderValue('fa', 'fa-value');
+    updateSliderValue('df', 'df-value');
+    updateSliderValue('volume', 'volume-value');
+  
+    // Setup play/pause button
+    document.getElementById('playPause').addEventListener('click', togglePlayPause);
+  
+    // Adjust the volume
+    document.getElementById('volume').addEventListener('input', function () {
+      gainNode.gain.setValueAtTime(this.value, audioContext.currentTime);
+      if (isPlaying) {
+        updateSequence(); // Update the sequence if it's playing
+      }
     });
-
-    // Volume control
-    volumeSlider.addEventListener('input', function () {
-        if (audioContext && oscillatorA && oscillatorB) {
-            const gainNode = audioContext.createGain();
-            gainNode.gain.setValueAtTime(parseFloat(volumeSlider.value), audioContext.currentTime);
-            oscillatorA.connect(gainNode).connect(audioContext.destination);
-            oscillatorB.connect(gainNode).connect(audioContext.destination);
-        }
-    });
-});
+  });

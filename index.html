@@ -8,22 +8,79 @@
 <body>
     <div class="container">
         <h1>Auditory streaming with ABA_</h1>
-        <div class="slider-container">
-            <label for="pr">PR:</label>
-            <input type="range" id="pr" min="1" max="10" step="0.1">
-            <label for="toneDur">Tone Duration:</label>
-            <input type="range" id="toneDur" min="0" max="1" step="0.01">
-            <label for="fa">fA:</label>
-            <input type="range" id="fa" min="200" max="2000" step="10">
-            <label for="df">DF:</label>
-            <input type="range" id="df" min="0" max="12" step="0.1">
+        
+        <div class="parameter">
+            <label for="pr">PR | Presentation Rate (Hz):</label>
+            <input type="range" id="pr" min="2" max="12" value="8" step="1" list="prList">
+            <span id="pr-value">8\2</span>
+            <datalist id="prList">
+                <option value="2"></option>
+                <option value="4"></option>
+                <option value="6"></option>
+                <option value="8"></option>
+                <option value="10"></option>
+                <option value="12"></option>
+            </datalist>
         </div>
-        <button id="playPause">Play / Pause</button>
-        <div class="volume-container">
+        
+        <div class="parameter">
+            <label for="toneDur">TD | Tone Duration (s):</label>
+            <input type="range" id="toneDur" min="0.05" max="0.5" value="0.1" step="0.01" list="toneDurList">
+            <span id="toneDur-value">0.1</span>
+            <datalist id="toneDurList">
+                <option value="0.1"></option>
+                <option value="0.2"></option>
+                <option value="0.3"></option>
+                <option value="0.4"></option>
+                <option value="0.5"></option>
+            </datalist>
+        </div>
+        
+        <div class="parameter">
+            <label for="fa">fA | Frequency of A tone in Hz:</label>
+            <input type="range" id="fa" min="250" max="1500" value="1000" step="1" list="faList">
+            <span id="fa-value">1000</span>
+            <datalist id="faList">
+                <option value="1000"></option>
+                <option value="500"></option>
+                <option value="750"></option>
+                <option value="1000"></option>
+                <option value="1250"></option>
+                <option value="1500"></option>
+            </datalist>
+        </div>
+        
+        <div class="parameter">
+            <label for="df">DF | fA - fB (st):</label>
+            <input type="range" id="df" min="-16" max="16" value="5" step="1" list="dfList">
+            <span id="df-value">5</span>
+            <datalist id="dfList">
+                <option value="-16"></option>
+                <option value="-8"></option>
+                <option value="0"></option>
+                <option value="8"></option>
+                <option value="16"></option>
+            </datalist>
+        </div>
+
+        <div class="parameter">
+            <button id="playPause">Play / Pause</button>
+        </div>
+        
+        <div class="parameter">
             <label for="volume">Volume:</label>
-            <input type="range" id="volume" min="0" max="1" step="0.01" orientation="vertical">
+            <input type="range" id="volume" min="0" max="1" value="0.5" step="0.01" orient="horizontal" list="VolList">
+            <span id="volume-value">0.5</span>
+            <datalist id="VolList">
+                <option value="0"></option>
+                <option value=".25"></option>
+                <option value=".50"></option>
+                <option value=".75"></option>
+                <option value="1.0"></option>
+            </datalist>
         </div>
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>
