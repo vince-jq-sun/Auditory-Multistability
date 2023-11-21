@@ -35,3 +35,9 @@ button {
     padding: 10px 20px;
     margin-right: 15px;
 }
+
+header img {
+    width: 100%; /* Makes the image full width */
+    height: auto; /* Maintains the aspect ratio */
+    display: block; /* Removes any extra space below the image */
+}
