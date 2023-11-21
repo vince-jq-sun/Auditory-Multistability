@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Auditory Streaming Demo</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Auditory streaming with ABA_</h1>
+        <div class="slider-container">
+            <label for="pr">PR:</label>
+            <input type="range" id="pr" min="1" max="10" step="0.1">
+            <label for="toneDur">Tone Duration:</label>
+            <input type="range" id="toneDur" min="0" max="1" step="0.01">
+            <label for="fa">fA:</label>
+            <input type="range" id="fa" min="200" max="2000" step="10">
+            <label for="df">DF:</label>
+            <input type="range" id="df" min="0" max="12" step="0.1">
+        </div>
+        <button id="playPause">Play / Pause</button>
+        <div class="volume-container">
+            <label for="volume">Volume:</label>
+            <input type="range" id="volume" min="0" max="1" step="0.01" orientation="vertical">
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
