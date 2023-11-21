@@ -27,7 +27,7 @@ function createToneBuffer(fA, fB, toneDur, pr) {
   const interval = sampleRate / pr;
   const silenceLength = interval - toneLength;
   const totalLength = interval * 4; // Length of one full sequence (ABA_)
-  const bufferSize = totalLength * Math.ceil(10 / (4 / pr)); // 10 seconds of buffer
+  const bufferSize = totalLength * Math.ceil(20 / (4 / pr)); // 20 seconds of buffer
 
   const buffer = audioContext.createBuffer(1, bufferSize, sampleRate);
   const data = buffer.getChannelData(0);
@@ -55,22 +55,30 @@ function playSequence() {
       bufferSource.stop();
       bufferSource.disconnect();
     }
-  
+
+    const pr = parseInt(document.getElementById('pr').value);
+    const userInputToneDur = parseFloat(document.getElementById('toneDur').value);
+    const maxToneDur = 1 / pr; // Maximum allowed Tone Duration based on PR
+
+    // Use the minimum of user input tone duration and the calculated maximum
+    const actualToneDur = Math.min(userInputToneDur, maxToneDur);
+
     bufferSource = audioContext.createBufferSource();
     bufferSource.buffer = createToneBuffer(
       parseInt(document.getElementById('fa').value),
       parseInt(document.getElementById('fa').value) * Math.pow(2, -parseInt(document.getElementById('df').value) / 12),
-      parseFloat(document.getElementById('toneDur').value),
-      parseInt(document.getElementById('pr').value)
+      actualToneDur, // Use the actual tone duration here
+      pr
     );
     bufferSource.loop = true;
-  
+
     gainNode.gain.value = parseFloat(document.getElementById('volume').value);
     bufferSource.connect(gainNode);
     gainNode.connect(audioContext.destination);
-  
+
     bufferSource.start();
-  }
+}
+
 
 function updateSequence() {
     if (isPlaying) {

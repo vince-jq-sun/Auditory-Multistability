@@ -2,12 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Auditory Streaming Demo</title>
+    <title>Auditory Streaming Demo\n</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
-        <img src="auditory streaming main heading.jpg" alt="Descriptive Text">
+        <div class="header-content">
+            <h1>Auditory Streaming Demo</h1>
+        </div>
     </header>
     <!-- Rest of your webpage content -->
     
@@ -17,7 +19,7 @@
         <div class="parameter">
             <label for="pr">PR | Presentation Rate (Hz):</label>
             <input type="range" id="pr" min="2" max="12" value="8" step="1" list="prList">
-            <span id="pr-value">8\2</span>
+            <span id="pr-value">8</span>
             <datalist id="prList">
                 <option value="2"></option>
                 <option value="4"></option>
@@ -74,8 +76,8 @@
         
         <div class="parameter">
             <label for="volume">Volume:</label>
-            <input type="range" id="volume" min="0" max="1" value="0.5" step="0.01" orient="horizontal" list="VolList">
-            <span id="volume-value">0.5</span>
+            <input type="range" id="volume" min="0" max="1" value="0.75" step="0.01" orient="horizontal" list="VolList">
+            <span id="volume-value">0.75</span>
             <datalist id="VolList">
                 <option value="0"></option>
                 <option value=".25"></option>

@@ -1,25 +1,31 @@
 body {
     font-family: Arial, sans-serif;
     margin: 0;
+    margin-left: 100px;
     padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    justify-content: left;
+    align-items: left;
     height: 100vh;
 }
 
+@media only screen and (max-width: 600px) {
+    body {
+        margin-left: 10px; /* Smaller left margin for narrow screens */
+    }
+}
+
 .container {
-    text-align: center;
+    text-align: left;
     width: 60%;
 }
 
 .parameter {
-    margin: 30px 0;
+    margin: 40px 0;
 }
 
 input[type=range] {
     width: 70%;
-    vertical-align: middle;
+    vertical-align: left;
 }
 
 input[type=range]:focus {
@@ -32,12 +38,26 @@ span {
 }
 
 button {
-    padding: 10px 20px;
+    padding: 20px 30px;
     margin-right: 15px;
 }
 
-header img {
-    width: 100%; /* Makes the image full width */
-    height: auto; /* Maintains the aspect ratio */
-    display: block; /* Removes any extra space below the image */
+header {
+    background-image: url('images/auditory streaming main heading.jpg'); /* Update with your image path */
+    background-size: cover; /* Ensures the image covers the entire header */
+    background-position: center; /* Centers the image in the header */
+    width: 80%;
+    height: 300px; /* Adjust the height as desired */
+    justify-content: center; /* Centers content horizontally */
+    align-items: center; /* Centers content vertically */
+}
+
+.header-content {
+    text-align: center;
+    color: white; /* Adjust text color for visibility */
+    /* Add more styling as needed */
+}
+
+.main-content {
+    padding: 40px;
 }
