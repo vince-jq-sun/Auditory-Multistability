@@ -23,19 +23,38 @@ function updateSliderValue(sliderId, valueId) {
 
 function createToneBuffer(fA, fB, toneDur, pr) {
   const sampleRate = audioContext.sampleRate;
-  const toneLength = sampleRate * toneDur;
-  const interval = sampleRate / pr;
-  const silenceLength = interval - toneLength;
+  let toneLength = Math.floor(sampleRate * toneDur);
+  let interval = Math.floor(sampleRate / pr);
+  let silenceLength = interval - toneLength;
+
+  if (3 * toneLength > interval * 3) {
+    toneLength = Math.floor(interval / 3);
+    silenceLength = interval - toneLength;
+  }
+
   const totalLength = interval * 4; // Length of one full sequence (ABA_)
   const bufferSize = totalLength * Math.ceil(20 / (4 / pr)); // 20 seconds of buffer
-
   const buffer = audioContext.createBuffer(1, bufferSize, sampleRate);
   const data = buffer.getChannelData(0);
+
+  const rampSamples = Math.floor(sampleRate * 0.01); // 10 ms in samples
 
   // Function to fill buffer with a tone
   function fillTone(frequency, start, duration) {
     for (let i = 0; i < duration; i++) {
-      data[start + i] += 0.5 * Math.sin(2 * Math.PI * frequency * (i / sampleRate));
+      let amplitude = 0.5; // Default amplitude
+
+      // Ramping up
+      if (i < rampSamples) {
+        amplitude *= i / rampSamples;
+      }
+
+      // Ramping down
+      if (i >= duration - rampSamples) {
+        amplitude *= (duration - i) / rampSamples;
+      }
+
+      data[start + i] += amplitude * Math.sin(2 * Math.PI * frequency * (i / sampleRate));
     }
   }
 
@@ -51,74 +70,73 @@ function createToneBuffer(fA, fB, toneDur, pr) {
 }
 
 function playSequence() {
-    if (bufferSource) {
-      bufferSource.stop();
-      bufferSource.disconnect();
-    }
+  if (bufferSource) {
+    bufferSource.stop();
+    bufferSource.disconnect();
+  }
 
-    const pr = parseInt(document.getElementById('pr').value);
-    const userInputToneDur = parseFloat(document.getElementById('toneDur').value);
-    const maxToneDur = 1 / pr; // Maximum allowed Tone Duration based on PR
+  const pr = parseInt(document.getElementById('pr').value);
+  const userInputToneDur = parseFloat(document.getElementById('toneDur').value);
+  const maxToneDur = 1 / pr; // Maximum allowed Tone Duration based on PR
 
-    // Use the minimum of user input tone duration and the calculated maximum
-    const actualToneDur = Math.min(userInputToneDur, maxToneDur);
+  // Use the minimum of user input tone duration and the calculated maximum
+  const actualToneDur = Math.min(userInputToneDur, maxToneDur);
 
-    bufferSource = audioContext.createBufferSource();
-    bufferSource.buffer = createToneBuffer(
-      parseInt(document.getElementById('fa').value),
-      parseInt(document.getElementById('fa').value) * Math.pow(2, -parseInt(document.getElementById('df').value) / 12),
-      actualToneDur, // Use the actual tone duration here
-      pr
-    );
-    bufferSource.loop = true;
+  bufferSource = audioContext.createBufferSource();
+  bufferSource.buffer = createToneBuffer(
+    parseInt(document.getElementById('fa').value),
+    parseInt(document.getElementById('fa').value) * Math.pow(2, -parseInt(document.getElementById('df').value) / 12),
+    actualToneDur, // Use the actual tone duration here
+    pr
+  );
+  bufferSource.loop = true;
 
-    gainNode.gain.value = parseFloat(document.getElementById('volume').value);
-    bufferSource.connect(gainNode);
-    gainNode.connect(audioContext.destination);
+  gainNode.gain.value = parseFloat(document.getElementById('volume').value);
+  bufferSource.connect(gainNode);
+  gainNode.connect(audioContext.destination);
 
-    bufferSource.start();
+  bufferSource.start();
 }
 
-
 function updateSequence() {
+  if (isPlaying) {
+    playSequence(); // Restart the sequence with new parameters
+  }
+}
+
+function togglePlayPause() {
+  initAudioContext(); // Initialize Audio Context on user interaction
+
+  const playPauseButton = document.getElementById('playPause');
+  if (!isPlaying) {
+    isPlaying = true;
+    playPauseButton.textContent = 'Pause';
+    playSequence();
+  } else {
+    isPlaying = false;
+    playPauseButton.textContent = 'Play';
+    if (bufferSource) {
+      bufferSource.stop();
+    }
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  // Set up sliders and event listeners
+  updateSliderValue('pr', 'pr-value');
+  updateSliderValue('toneDur', 'toneDur-value');
+  updateSliderValue('fa', 'fa-value');
+  updateSliderValue('df', 'df-value');
+  updateSliderValue('volume', 'volume-value');
+
+  // Setup play/pause button
+  document.getElementById('playPause').addEventListener('click', togglePlayPause);
+
+  // Adjust the volume
+  document.getElementById('volume').addEventListener('input', function () {
+    gainNode.gain.setValueAtTime(this.value, audioContext.currentTime);
     if (isPlaying) {
-      playSequence(); // Restart the sequence with new parameters
+      updateSequence(); // Update the sequence if it's playing
     }
-  }
-  
-  function togglePlayPause() {
-    initAudioContext(); // Initialize Audio Context on user interaction
-  
-    const playPauseButton = document.getElementById('playPause');
-    if (!isPlaying) {
-      isPlaying = true;
-      playPauseButton.textContent = 'Pause';
-      playSequence();
-    } else {
-      isPlaying = false;
-      playPauseButton.textContent = 'Play';
-      if (bufferSource) {
-        bufferSource.stop();
-      }
-    }
-  }
-  
-  document.addEventListener('DOMContentLoaded', function () {
-    // Set up sliders and event listeners
-    updateSliderValue('pr', 'pr-value');
-    updateSliderValue('toneDur', 'toneDur-value');
-    updateSliderValue('fa', 'fa-value');
-    updateSliderValue('df', 'df-value');
-    updateSliderValue('volume', 'volume-value');
-  
-    // Setup play/pause button
-    document.getElementById('playPause').addEventListener('click', togglePlayPause);
-  
-    // Adjust the volume
-    document.getElementById('volume').addEventListener('input', function () {
-      gainNode.gain.setValueAtTime(this.value, audioContext.currentTime);
-      if (isPlaying) {
-        updateSequence(); // Update the sequence if it's playing
-      }
-    });
   });
+});
