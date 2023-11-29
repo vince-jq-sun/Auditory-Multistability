@@ -44,10 +44,10 @@
         </div>
         
         <div class="parameter">
-            <label for="fa">fA | Frequency of A tone in Hz:</label>
-            <input type="range" id="fa" min="250" max="1500" value="1000" step="1" list="faList">
-            <span id="fa-value">1000</span>
-            <datalist id="faList">
+            <label for="fh">FH | Frequency of the high-pitch tone in Hz:</label>
+            <input type="range" id="fh" min="250" max="1500" value="1000" step="1" list="fhList">
+            <span id="fh-value">1000</span>
+            <datalist id="fhList">
                 <option value="1000"></option>
                 <option value="500"></option>
                 <option value="750"></option>
@@ -60,13 +60,17 @@
         <div class="parameter">
             <label for="df">DF | fA - fB (st):</label>
             <input type="range" id="df" min="-16" max="16" value="5" step="1" list="dfList">
-            <span id="df-value">5</span>
+            <span id="df-value">9</span>
             <datalist id="dfList">
-                <option value="-16"></option>
-                <option value="-8"></option>
+                <option value="-20"></option>
+                <option value="-15"></option>
+                <option value="-10"></option>
+                <option value="-5"></option>
                 <option value="0"></option>
-                <option value="8"></option>
-                <option value="16"></option>
+                <option value="5"></option>
+                <option value="10"></option>
+                <option value="15"></option>
+                <option value="20"></option>
             </datalist>
         </div>
 

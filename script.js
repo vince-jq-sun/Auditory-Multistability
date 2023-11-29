@@ -79,16 +79,27 @@ function playSequence() {
   const userInputToneDur = parseFloat(document.getElementById('toneDur').value);
   const maxToneDur = 1 / pr; // Maximum allowed Tone Duration based on PR
 
+  const fh = parseFloat(document.getElementById('fh').value);
+  const df = parseFloat(document.getElementById('df').value);
+
+  const fl = fh * Math.pow(2, -Math.abs(df) / 12);
+
+  let fA, fB;
+  if (df >= 0){
+    fA = fh;
+    fB = fl;
+  }else{
+    fA = fl;
+    fB = fh;
+  }
+  // const fA = fh;
+  // const fB = fh * Math.pow(2, df / 12);
+
   // Use the minimum of user input tone duration and the calculated maximum
   const actualToneDur = Math.min(userInputToneDur, maxToneDur);
 
   bufferSource = audioContext.createBufferSource();
-  bufferSource.buffer = createToneBuffer(
-    parseInt(document.getElementById('fa').value),
-    parseInt(document.getElementById('fa').value) * Math.pow(2, -parseInt(document.getElementById('df').value) / 12),
-    actualToneDur, // Use the actual tone duration here
-    pr
-  );
+  bufferSource.buffer = createToneBuffer(fA,fB,actualToneDur,pr);
   bufferSource.loop = true;
 
   gainNode.gain.value = parseFloat(document.getElementById('volume').value);
@@ -125,7 +136,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // Set up sliders and event listeners
   updateSliderValue('pr', 'pr-value');
   updateSliderValue('toneDur', 'toneDur-value');
-  updateSliderValue('fa', 'fa-value');
+  updateSliderValue('fh', 'fh-value');
   updateSliderValue('df', 'df-value');
   updateSliderValue('volume', 'volume-value');
 
