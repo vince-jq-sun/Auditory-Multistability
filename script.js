@@ -79,10 +79,10 @@ function playSequence() {
   const userInputToneDur = parseFloat(document.getElementById('toneDur').value);
   const maxToneDur = 1 / pr; // Maximum allowed Tone Duration based on PR
 
-  const fh = parseFloat(document.getElementById('fh').value);
+  const fl = parseFloat(document.getElementById('fl').value);
   const df = parseFloat(document.getElementById('df').value);
 
-  const fl = fh * Math.pow(2, -Math.abs(df) / 12);
+  const fh = fl * Math.pow(2, Math.abs(df) / 12);
 
   let fA, fB;
   if (df >= 0){
@@ -92,8 +92,6 @@ function playSequence() {
     fA = fl;
     fB = fh;
   }
-  // const fA = fh;
-  // const fB = fh * Math.pow(2, df / 12);
 
   // Use the minimum of user input tone duration and the calculated maximum
   const actualToneDur = Math.min(userInputToneDur, maxToneDur);
@@ -121,11 +119,11 @@ function togglePlayPause() {
   const playPauseButton = document.getElementById('playPause');
   if (!isPlaying) {
     isPlaying = true;
-    playPauseButton.textContent = 'Pause';
+    playPauseButton.textContent = 'Play / Pause';
     playSequence();
   } else {
     isPlaying = false;
-    playPauseButton.textContent = 'Play';
+    playPauseButton.textContent = 'Play / Pause';
     if (bufferSource) {
       bufferSource.stop();
     }
@@ -136,7 +134,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // Set up sliders and event listeners
   updateSliderValue('pr', 'pr-value');
   updateSliderValue('toneDur', 'toneDur-value');
-  updateSliderValue('fh', 'fh-value');
+  updateSliderValue('fl', 'fl-value');
   updateSliderValue('df', 'df-value');
   updateSliderValue('volume', 'volume-value');
 

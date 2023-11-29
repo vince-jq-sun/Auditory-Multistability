@@ -11,17 +11,36 @@
             <h1>Auditory Streaming Demo</h1>
         </div>
     </header>
+
     <!-- Rest of your webpage content -->
     
+    <div class="button-container">
+        <button id="playPause">Play / Pause</button>
+    </div>
+
     <div class="container">
         <h1>Auditory streaming with ABA_</h1>
-        
+
+        <div class="text-block">
+            <p>The tones are presented in an ABA_ triplet pattern.</p>
+            <p>Relax and continue listening. Your perception of the sounds can change over time.</p>
+            <p>At least two perceptual interpretations are possible: a single, integrated stream and two parallel, segregated streams. 
+                You may perceive one of the segregated stream stands out.</p>
+            <p>You have the option to adjust four parameters:</p>
+        </div>
+
+        <!-- <div class="parameter">
+            <button id="playPause">Play / Pause</button>
+        </div> -->
+
         <div class="parameter">
             <label for="pr">PR | Presentation Rate (Hz):</label>
-            <input type="range" id="pr" min="2" max="12" value="8" step="1" list="prList">
+        </div>
+        
+        <div class="slider-container">
+            <input type="range" id="pr" min="4" max="12" value="8" step="1" list="prList">
             <span id="pr-value">8</span>
             <datalist id="prList">
-                <option value="2"></option>
                 <option value="4"></option>
                 <option value="6"></option>
                 <option value="8"></option>
@@ -32,35 +51,45 @@
         
         <div class="parameter">
             <label for="toneDur">TD | Tone Duration (s):</label>
-            <input type="range" id="toneDur" min="0.05" max="0.5" value="0.1" step="0.01" list="toneDurList">
+            <p>&nbsp&nbsp 1/PR is the upper limit for TD</p> 
+
+        </div>
+        <div class="slider-container">
+            <input type="range" id="toneDur" min="0.05" max="0.25" value="0.1" step="0.01" list="toneDurList">
             <span id="toneDur-value">0.1</span>
             <datalist id="toneDurList">
+                <option value="0.05"></option>
                 <option value="0.1"></option>
+                <option value="0.15"></option>
                 <option value="0.2"></option>
-                <option value="0.3"></option>
-                <option value="0.4"></option>
-                <option value="0.5"></option>
+                <option value="0.25"></option>
+                <option value="0.25"></option>
             </datalist>
         </div>
         
         <div class="parameter">
-            <label for="fh">FH | Frequency of the high-pitch tone in Hz:</label>
-            <input type="range" id="fh" min="250" max="1500" value="1000" step="1" list="fhList">
-            <span id="fh-value">1000</span>
-            <datalist id="fhList">
+            <label for="fl">FL | low-pitch tone frequency (Hz):</label>
+        </div>
+        <div class="slider-container">
+            <input type="range" id="fl" min="200" max="1200" value="600" step="10" list="flList">
+            <span id="fl-value">500</span>
+            <datalist id="flList">
+                <option value="200"></option>
+                <option value="400"></option>
+                <option value="600"></option>
+                <option value="800"></option>
                 <option value="1000"></option>
-                <option value="500"></option>
-                <option value="750"></option>
-                <option value="1000"></option>
-                <option value="1250"></option>
-                <option value="1500"></option>
+                <option value="1200"></option>
             </datalist>
         </div>
         
         <div class="parameter">
-            <label for="df">DF | fA - fB (st):</label>
+            <label for="df">DF | frequency difference btw. A&B (st):</label>
+            <p>&nbsp&nbsp The triplet is high-low-high for +DF and low-high-low for -DF</p> 
+        </div>
+        <div class="slider-container">
             <input type="range" id="df" min="-16" max="16" value="5" step="1" list="dfList">
-            <span id="df-value">9</span>
+            <span id="df-value">5</span>
             <datalist id="dfList">
                 <option value="-20"></option>
                 <option value="-15"></option>
@@ -73,13 +102,11 @@
                 <option value="20"></option>
             </datalist>
         </div>
-
-        <div class="parameter">
-            <button id="playPause">Play / Pause</button>
-        </div>
         
         <div class="parameter">
             <label for="volume">Volume:</label>
+        </div>
+        <div class="slider-container">
             <input type="range" id="volume" min="0" max="1" value="0.75" step="0.01" orient="horizontal" list="VolList">
             <span id="volume-value">0.75</span>
             <datalist id="VolList">
