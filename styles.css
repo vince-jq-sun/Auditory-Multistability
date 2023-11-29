@@ -75,7 +75,7 @@ header {
 .button-container {
     position: absolute;
     right: 100px;
-    bottom: -20px;
+    top: 800px;
 }
     /* top: 870px;
 /* } */
